@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nfs
+  name: nfs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nfs
+  template:
+    metadata:
+      labels:
+        app: nfs
+    spec:
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        volumeMounts:
+        - mountPath: /mnt
+          name: nfs-share
+      volumes:
+      - name: nfs-share
+        nfs:
+          server: 192.168.119.153
+          path: /data/nfs/testdata

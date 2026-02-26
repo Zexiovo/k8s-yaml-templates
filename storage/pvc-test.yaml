@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pvc-test
+  name: pvc-test
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pvc-test
+  template:
+    metadata:
+      labels:
+        app: pvc-test
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: task-pvc-claim
+      containers:
+      - env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: LANG
+          value: C.UTF-8
+        image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        imagePullPolicy: IfNotPresent
+        name: pvc-test
+        volumeMounts:
+        - mountPath: "/usr/share/nginx/html"
+          name: data

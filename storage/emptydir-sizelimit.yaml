@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: emptydir-sizelimit
+  name: emptydir-sizelimit
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: emptydir-sizelimit
+  template:
+    metadata:
+      labels:
+        app: emptydir-sizelimit
+    spec:
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        volumeMounts:
+        - mountPath: /opt
+          name: share-volume
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/redis:7.2.5
+        name: redis
+        volumeMounts:
+        - mountPath: /mnt
+          name: share-volume
+      volumes:
+      - name: share-volume
+        emptyDir:
+          #medium: Memory 
+          sizeLimit: 10Mi

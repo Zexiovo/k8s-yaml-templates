@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx-run
+  name: nginx-run
+    #namespace: pod-study
+spec:
+  terminationGracePeriodSeconds: 30
+  containers:
+  - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:stable
+    name: nginx
+    lifecycle:
+      postStart:
+        exec:
+          command:
+          - mkdir
+          - -p
+          - /data/yu
+      preStop:
+        sleep:
+          seconds: 5
+        #exec:
+          #command:
+          #  - sleep
+          #  - "10"
+    ports:
+    - containerPort: 80
+      name: http-web
+    imagePullPolicy: IfNotPresent
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: java
+    tier: backend
+  name: java
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: java
+  template:
+    metadata:
+      labels:
+        app: java
+    spec:
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/java:v1
+        imagePullPolicy: IfNotPresent
+        name: java
+        env:
+          - name: ENV
+            value: test
+          - name: SERVER_PORT
+            value: "8080"
+          - name: JAVA_TOOL_OPTIONS
+            value: -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -Xms512m -Xmx512m -Xss256K -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=UTF-8
+          - name: SPRING_PROFILES_ACTIVE
+            value: test
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 2
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 2
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            cpu: 1
+            memory: 512Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx
+  name: nginx
+    #namespace: pod-study
+spec:
+  containers:
+  - image: crpi-fr9j2ao0rwew6bnj.cn-shanghai.personal.cr.aliyuncs.com/yurenovo/nginx:stable-alpine3.23
+    name: nginx
+    ports:
+    - containerPort: 80
+      name: http-web
+    imagePullPolicy: IfNotPresent
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

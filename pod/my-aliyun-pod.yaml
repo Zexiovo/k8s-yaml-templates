@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: aliyun-pod-test 
+spec:
+  containers:
+    - name: my-container
+      # 替换成你阿里云仓库里实际存在的镜像地址
+      image: crpi-fr9j2ao0rwew6bnj.cn-shanghai.personal.cr.aliyuncs.com/yurenovo/alpine:3.23
+        #imagePullPolicy: Always
+      command: ["/bin/sh", "-c", "sleep 3600"]
+  # --- 关键配置在这里 ---
+  # 告诉 K8s 拉取这个镜像时，使用刚才创建的名为 aliyun-secret 的凭证
+  imagePullSecrets:
+    - name: aliyun-secret

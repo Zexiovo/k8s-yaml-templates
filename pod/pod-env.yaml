@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx-env
+    app: nginx-env
+  name: nginx-env
+    #namespace: pod-study
+spec:
+  containers:
+  - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:stable
+    name: nginx
+    ports:
+    - containerPort: 80
+      name: http-web
+        #command: 
+        #- sleep
+        #- "600"
+    resources:
+      requests:
+        memory: 100Mi
+        cpu: 100m
+      limits:
+        memory: 200Mi
+    env:
+    - name: ENV
+      value: test
+    - name: POD_NAME
+      valueFrom: 
+        fieldRef:
+          fieldPath: metadata.name
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    - name: APP_LABEL
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.labels['app']
+        #- image: registry.cn-beijing.aliyuncs.com/dotbalo/redis:7.2.5
+        #  name: redis
+        #  ports:
+        #  - containerPort: 6379
+        #    name: tcp-redis
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: 
+  name: ws-ingress
+  namespace: study-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    # snippet 通常用于配置一些不支持或者复杂的参数，比如配置请求头，或者逻辑控制
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Updrade $http_updrade;
+      proxy_set_header Connection 'upgrade';
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: ws.test.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: nginx
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific
+

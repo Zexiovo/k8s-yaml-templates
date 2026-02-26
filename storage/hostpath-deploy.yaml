@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hostpath-deploy
+  name: hostpath-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hostpath-deploy
+  template:
+    metadata:
+      labels:
+        app: hostpath-deploy
+    spec:
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        volumeMounts:
+        - mountPath: /opt
+          name: share-volume
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/redis:7.2.5
+        name: redis
+        volumeMounts:
+        - mountPath: /mnt
+          name: share-volume
+        - mountPath: /data
+          name: data
+      volumes:
+      - name: share-volume
+        emptyDir:
+          medium: Memory
+          sizeLimit: 10Mi
+      - name: data
+        hostPath:
+          path: /data

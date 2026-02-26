@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: emptydir
+  name: emptydir
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: emptydir
+  template:
+    metadata:
+      labels:
+        app: emptydir
+    spec:
+      containers:
+      - image: crpi-fr9j2ao0rwew6bnj.cn-shanghai.personal.cr.aliyuncs.com/yurenovo/nginx:stable-alpine3.23
+        name: nginx
+        volumeMounts:
+        - mountPath: /opt
+          name: share-volume
+      - image: crpi-fr9j2ao0rwew6bnj.cn-shanghai.personal.cr.aliyuncs.com/yurenovo/redis:8.2
+        name: redis
+        volumeMounts:
+        - mountPath: /mnt
+          name: share-volume
+      volumes:
+      - name: share-volume
+        emptyDir: {}

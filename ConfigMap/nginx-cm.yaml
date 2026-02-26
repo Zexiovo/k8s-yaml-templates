@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-cm
+  name: nginx-cm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: conf
+        configMap:
+          name: nginxconf
+      - name: conf2
+        configMap:
+          name: multile-file
+          items:
+          - key: my.cnf
+            path: mysql.conf
+            mode: 0777
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: env-cm
+              key: DB_HOST
+        envFrom:
+        - configMapRef:
+            name: env-cm
+          prefix: CM_
+        volumeMounts:
+        - name: conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: conf2
+          mountPath: /data

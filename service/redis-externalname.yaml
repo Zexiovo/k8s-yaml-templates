@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+ name: redis
+ namespace: projecta-dev
+spec:
+ type: ExternalName
+ externalName: redis.basic-component-dev.svc.cluster.local
+---
+kind: Service
+apiVersion: v1
+metadata:
+ name: redis
+ namespace: projecta-uat
+spec:
+ type: ExternalName
+ externalName: redis.basic-component-uat.svc.cluster.local
+

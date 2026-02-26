@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx2
+  name: nginx2
+spec:
+  containers:
+  - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:stable
+    name: nginx2
+    resources: {}
+    command:
+    - 'sleep'
+    - '5'
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: user-payment
+  namespace: study-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: project.test.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: user
+            port:
+              number: 8080
+        path: /userapi(/|$)(.*)
+        pathType: Prefix
+      - backend:
+          service:
+            name: payment
+            port:
+              number: 8080
+        path: /paymentapi(/|$)(.*)
+        pathType: Prefix
+

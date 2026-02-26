@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: multiple-config
+data:
+  multiple-conf: |-
+    port: 80
+    bind: 1.1.1.1
+    pass: PASSWORD
