@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello2
+spec:
+  parallelism: 2  # 创建 2 个 Pod 同时执行任务
+  completions: 5  # 有 5 个完成表示任务结束
+  backoffLimit: 2  # 每个 Pod 最大重启次数
+  template:
+    metadata: {}
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - echo "Hello Job!" 
+        image: registry.cn-beijing.aliyuncs.com/dotbalo/busybox
+        name: hello2
+        resources: {}
+      restartPolicy: Never
+status: {}

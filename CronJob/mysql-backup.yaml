@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mysql-backup
+spec:
+  failedJobsHistoryLimit: 5
+  successfulJobsHistoryLimit: 5
+    # concurrencyPolicy: Replace
+  jobTemplate:
+    metadata:
+      name: mysql-backup
+    spec:
+      template:
+        metadata: {}
+        spec:
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: mysql-backup-data
+          containers:
+          - image: registry.cn-beijing.aliyuncs.com/dotbalo/mysql:8.0.20
+            name: backup
+            command:
+            - sh
+            - -c
+            - |
+              mysqldump -hmysql.default -P3306 -uroot -p'password_123' --all-databases > /mnt/all-`date +%Y%m%d-%H%M%S`.sql;
+              ls /mnt/
+            resources: {}
+            volumeMounts:
+            - name: data
+              mountPath: /mnt
+          restartPolicy: OnFailure
+  schedule: '35 20 * * *'
+  timeZone: "Asia/Shanghai"
+status: {}
