@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-ui
+  namespace: demo
+  labels:
+    app: demo-ui
+  annotations:
+    kubeasy.com/autoCreate: 'true'
+spec:
+  ports:
+  - name: http-web
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    app: demo-ui
+  type: ClusterIP
+  sessionAffinity: None

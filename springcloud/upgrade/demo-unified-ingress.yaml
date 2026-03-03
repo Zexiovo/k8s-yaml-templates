@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-unified-ingress
+  namespace: demo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    # 如果你的后端代码本身就带 /api 前缀，建议去掉 rewrite 或确保匹配正确
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - host: demo.test.com
+    http:
+      paths:
+      # 1. 匹配后端网关/服务 (优先级高)
+      # 匹配所有以 /api 开头的请求，转发给 demo-receive
+      - path: /api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: demo-receive
+            port:
+              number: 8080
+      # 2. 匹配前端 UI (优先级低)
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: demo-ui
+            port:
+              number: 80
