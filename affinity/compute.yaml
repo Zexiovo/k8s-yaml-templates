@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: compute
+  name: compute
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: compute
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: compute
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                - ssd
+                - nvme
+
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        resources: {}
+status: {}

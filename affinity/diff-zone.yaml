@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: diff-zone
+  name: diff-zone
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: diff-zone
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: diff-zone
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - diff-zone
+              topologyKey: zone
+              namespaces: []
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        resources: {}
+status: {}

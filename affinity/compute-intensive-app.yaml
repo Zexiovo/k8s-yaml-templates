@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: compute-intensive-app
+  name: compute-intensive-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: compute-intensive-app
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: compute-intensive-app
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: performance
+                operator: NotIn
+                values:
+                - low
+
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        resources: {}
+status: {}

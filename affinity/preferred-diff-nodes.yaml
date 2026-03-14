@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: diff-nodes
+  name: diff-nodes
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: diff-nodes
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: diff-nodes
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - diff-nodes
+              topologyKey: kubernetes.io/hostname
+              namespaces: []
+            weight: 100
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        resources: {}
+status: {}

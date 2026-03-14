@@ -1,0 +1,48 @@
+{{- range .Values.applications }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  labels:
+    {{- include "demo.labels" $ | nindent 4 }}
+    app: {{ .name }}
+spec:
+  replicas: {{ .replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "demo.selectorLabels" $ | nindent 6 }}
+      app: {{ .name }}
+  template:
+    metadata:
+      {{- with $.Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "demo.selectorLabels" $ | nindent 8 }}
+        app: {{ .name }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .name }}
+          image: "{{ .image }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .appPort }}
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http 
+          readinessProbe:
+            tcpSocket:
+              port: http 
+          env:
+          {{- toYaml .env | nindent 10 }}
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+{{- end }}

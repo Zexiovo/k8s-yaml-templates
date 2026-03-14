@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: diff-zone
+  name: diff-zone
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: diff-zone
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: diff-zone
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        whenUnsatisfiable: ScheduleAnyway
+        topologyKey: kubernetes.io/hostname
+        labelSelector:
+          matchLabels:
+            app: example
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        resources: {}
+status: {}

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: dev-quota
+  namespace: project-dev
+spec:
+  hard:
+    requests.cpu: "3"
+    requests.memory: 2Gi
+    limits.cpu: "6"
+    limits.memory: 4Gi
+    pods: "50"
+    persistentvolumeclaims: "10"
+    requests.storage: 40Gi
+    services: "40"
+    count/replicasets.apps: 1k
+    count/pods: "1000"
+

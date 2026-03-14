@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: demo
+  name: demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+      - image: crpi-fr9j2ao0rwew6bnj.cn-shanghai.personal.cr.aliyuncs.com/yurenovo/nginx:stable-alpine3.23
+        name: nginx
+        resources: 
+          requests:
+            cpu: 200m
+            memory: 100Mi
+
+status: {}
