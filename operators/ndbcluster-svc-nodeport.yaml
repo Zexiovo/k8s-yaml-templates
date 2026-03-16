@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-ndb-mysqld-nodeport
+  namespace: ndb-cluster
+spec:
+  ports:
+  - name: mysqld-service-port-0
+    port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    mysql.oracle.com/node-type: mysqld
+    mysql.oracle.com/v1: example-ndb
+  sessionAffinity: None
+  type: NodePort
+

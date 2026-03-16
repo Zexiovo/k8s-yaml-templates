@@ -1,0 +1,23 @@
+apiVersion: mysql.oracle.com/v1
+kind: NdbCluster
+metadata:
+  name: example-ndb
+spec:
+  image: registry.cn-beijing.aliyuncs.com/dotbalo/community-cluster:9.1.0
+  redundancyLevel: 1 # 指定数据副本的数量，生产环境大于等于 2
+  dataNode:
+    nodeCount: 1
+    pvcSpec:
+      storageClassName: nfs-csi
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+  mysqlNode:
+    nodeCount: 1
+    pvcSpec:
+      storageClassName: nfs-csi
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
