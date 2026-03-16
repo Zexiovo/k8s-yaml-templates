@@ -1,0 +1,26 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: redis-queue-scaledjob
+spec:
+  jobTargetRef:
+    parallelism: 1 # 每次只启动一个 Job 实例
+    completions: 1 # 每个 Job 只需要完成一次
+    backoffLimit: 4 # 最大重试次数
+    template:
+      spec:
+        containers:
+          - name: redis-queue-consumer
+            image: registry.cn-beijing.aliyuncs.com/dotbalo/redis:process
+  pollingInterval: 30 # 每 30 秒检查一次队列中的消息数量
+  successfulJobsHistoryLimit: 3 # 保留最近 3 个成功的 Job
+  failedJobsHistoryLimit: 3 # 保留最近 3 个失败的 Job
+  maxReplicaCount: 5 # 最多同时运行 5 个 Job
+  triggers:
+  - type: redis
+    metadata:
+      address: redis-master.default.svc.cluster.local:6379
+      listName: test_list
+      listLength: "5"
+    authenticationRef:
+      name: redis-so-ta

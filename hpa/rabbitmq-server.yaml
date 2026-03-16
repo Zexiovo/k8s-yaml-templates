@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rabbitmq
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/rabbitmq:4.0.5-management-alpine
+        name: rabbitmq
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: LANG
+          value: C.UTF-8
+        - name: RABBITMQ_DEFAULT_USER
+          value: user
+        - name: RABBITMQ_DEFAULT_PASS
+          value: password
+        resources: {}
+status: {}

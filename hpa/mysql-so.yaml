@@ -1,0 +1,20 @@
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: mysql-scaledobject
+spec:
+  scaleTargetRef:
+    name: update-orders
+  pollingInterval: 5 # 检查周期，默认 5 秒
+  cooldownPeriod: 30 # 冷却时间，默认 300 秒
+  minReplicaCount: 1
+  maxReplicaCount: 5 # 最大副本数
+  triggers:
+  - type: mysql
+    metadata:
+      queryValue: "4.4" # 触发扩缩容的平均值
+      query: "SELECT COUNT(*) FROM orders WHERE status='pending'"
+
+    authenticationRef:
+      name: keda-trigger-auth-mysql-conn

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-server
+  name: nginx-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx-server
+    spec:
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/nginx:1.15.12
+        name: nginx
+        resources: 
+          requests:
+            cpu: "10m"
+            memory: "64Mi"
+status: {}

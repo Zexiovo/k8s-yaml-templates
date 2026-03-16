@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keda-mysql-secret
+stringData:
+  # 修改后：root:password@tcp(mysql.default.svc.cluster.local:3306)/dukuan
+  mysql_conn_str: root:password@tcp(mysql.default.svc.cluster.local:3306)/dukuan
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: keda-trigger-auth-mysql-conn
+spec:
+  secretTargetRef:
+  - parameter: connectionString
+    name: keda-mysql-secret
+    key: mysql_conn_str

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rabbitmq-consumer
+  name: rabbitmq-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq-consumer
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-consumer
+    spec:
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/dotbalo/rabbitmq-consumer:v1.0
+        name: rabbitmq-consumer
+        command:
+          - receive
+        args:
+          - "amqp://user:password@rabbitmq.default.svc.cluster.local:5672"
+        resources: {}
+status: {}

@@ -1,0 +1,22 @@
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: rabbitmq-scaledobject
+spec:
+  scaleTargetRef:
+    name: rabbitmq-consumer
+  pollingInterval: 5 # 检查周期，默认 5 秒
+  cooldownPeriod: 30 # 冷却时间，默认 300 秒
+  minReplicaCount: 1
+  maxReplicaCount: 30 # 最大副本数
+  triggers:
+  - type: rabbitmq
+    metadata:
+      protocol: amqp
+      queueName: hello
+      mode: QueueLength # 监听模式，队列长度(QueueLength)或消息速率( MessageRate)
+      value: "50" # 消息数或每秒速率
+    authenticationRef:
+      name: keda-trigger-auth-rabbitmq-conn
+

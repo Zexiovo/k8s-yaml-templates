@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redis-so-secret
+type: Opaque
+stringData:
+  redis_username: ""
+  redis_password: "dukuan"
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: redis-so-ta
+spec:
+  secretTargetRef:
+  - parameter: username
+    name: redis-so-secret
+    key: redis_username
+  - parameter: password
+    name: redis-so-secret
+    key: redis_password
