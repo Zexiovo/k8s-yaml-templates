@@ -1,0 +1,33 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-cluster
+spec:
+  version: 9.3.1
+  nodeSets:
+  - name: default
+    count: 3
+    #config:
+      #node.store.allow_mmap: false  # 开启内存映射 每台机器至少有2G内存，否则Pod会Pending, 影响机器的性能
+
+    # 存储配置 生产环境必须开启 
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data  # Do not change this name unless you set up a volume mount for the data path.
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+        storageClassName: standard
+
+    podTemplate:
+      spec:
+        # 初始化容器来提升虚拟内存
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=1048576']

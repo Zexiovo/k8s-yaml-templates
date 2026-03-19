@@ -1,0 +1,37 @@
+apiVersion: logstash.k8s.elastic.co/v1alpha1
+kind: Logstash
+metadata:
+  name: logstash
+  namespace: logging
+spec:
+  count: 1
+  version: 9.3.1
+  elasticsearchRefs:
+    - name: es-cluster
+      clusterName: es-cluster
+  pipelines:
+    - pipeline.id: main
+      config.string: |
+        input {
+          kafka {
+            # 这里的地址根据你的 kafka-cluster 名称进行了修正
+            bootstrap_servers => "kafka-cluster-kafka-bootstrap.logging.svc:9092"
+            topics => ["k8spodlogs"]
+            group_id => "logstash-consumear-debug-group"
+            codec => "json"
+            consumer_threads => 3
+            decorate_events => true
+            auto_offset_reset => "earliest"
+          }
+        }
+        output {
+          elasticsearch {
+            hosts => [ "https://es-cluster-es-http:9200" ]
+            # 索引名称建议带上日期，方便清理
+            index => "k8spodlogs-%{+YYYY.MM.dd}"
+            user => "elastic"
+            # 建议检查这个密码是否与你当前的 ES 集群一致
+            password => "O4vrzHC1Tk7pT1i2iS1EtQRg"
+            ssl_certificate_authorities => "${ES_CLUSTER_ES_SSL_CERTIFICATE_AUTHORITY}"
+          }
+        }
