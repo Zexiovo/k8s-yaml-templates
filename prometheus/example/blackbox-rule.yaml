@@ -1,0 +1,32 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/name: blackbox-exporter
+    prometheus: k8s
+    role: alert-rules
+  name: blackbox
+  namespace: monitoring
+spec:
+  groups:
+  - name: blackbox-exporter
+    rules:
+    - alert: DomainCannotAccess
+      annotations:
+        description: 域名：{{ $labels.instance }} 不可达
+        summary: 域名探测失败
+      expr: probe_success == 0
+      for: 1m
+      labels:
+        severity: critical
+        type: blackbox
+    - alert: DomainAccessDelayExceeds1s
+      annotations:
+        description: 域名：{{ $labels.instance }} 探测延迟大于 1 秒，当前延迟为：{{ $value }}
+        summary: 域名探测，访问延迟超过 1 秒
+      expr: sum(probe_http_duration_seconds{job=~"blackbox"}) by (   instance) > 1
+      for: 1m
+      labels:
+        severity: warning
+        type: blackbox

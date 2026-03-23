@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: blackbox
+  labels:
+    alertmanagerConfig: example
+spec:
+  route:
+    groupBy: ['type']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    routes:
+    - matchers:
+      - matchType: =
+        name: type
+        value: blackbox
+      receiver: Default
+  receivers:
+  - name: Default
+    emailConfigs:
+    - to: liusan3003@163.com
+      sendResolved: true

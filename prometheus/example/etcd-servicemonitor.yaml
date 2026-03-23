@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: etcd
+  namespace: monitoring
+  labels:
+    app: etcd
+spec:
+  jobLabel: k8s-app
+  endpoints:
+  - interval: 30s
+    port: https-metrics # 这个 port 对应 Service.spec.ports.name
+    scheme: https
+    tlsConfig:
+      caFile: /etc/prometheus/secrets/etcd-ssl/ca.crt #证书路径
+      certFile: /etc/prometheus/secrets/etcd-ssl/server.crt
+      keyFile: /etc/prometheus/secrets/etcd-ssl/server.key
+      insecureSkipVerify: true # 关闭证书校验
+  selector:
+    matchLabels:
+      app: etcd-prom # 跟 svc 的 lables 保持一致
+  namespaceSelector:
+    matchNames:
+      - kube-system

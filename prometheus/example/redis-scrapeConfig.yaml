@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: redis-exporter
+  namespace: monitoring
+spec:
+  scrapeInterval: 30s
+  jobName: redis-exporter
+  metricsPath: /scrape
+  scheme: HTTP
+  staticConfigs:
+  - targets:
+    # 多个实例写多次即可
+    # redis://<username>:<password>@address:port
+    - redis://redis.default:6379
+    labels:
+      env: test
+  relabelings:
+    - sourceLabels: [__address__]
+      targetLabel: __param_target
+    - sourceLabels: [__param_target]
+      targetLabel: instance
+    - targetLabel: __address__
+      replacement: redis-exporter.monitoring:9121

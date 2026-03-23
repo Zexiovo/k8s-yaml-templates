@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: windows-exporter
+  namespace: monitoring
+spec:
+  scrapeInterval: 30s
+  jobName: windows-exporter
+  metricsPath: /metrics
+  scheme: HTTP
+  staticConfigs:
+  - targets:
+    # 多个实例写多次即可
+    - 192.168.1.7:9182
+    labels:
+      env: test
+

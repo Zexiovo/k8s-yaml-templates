@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysql-exporter
+  name: mysql-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-exporter
+  template:
+    metadata:
+      annotations:
+        app: mysql-exporter
+      creationTimestamp: null
+      labels:
+        app: mysql-exporter
+    spec:
+      containers:
+      - args:
+        - --config.my-cnf
+        - /mnt/.my.cnf
+        - --mysqld.address
+        - mysql.default:3306
+        image: registry.cn-beijing.aliyuncs.com/dotbalo/mysqld-exporter:latest
+        imagePullPolicy: IfNotPresent
+        name: mysql-exporter
+        ports:
+        - containerPort: 9104
+          name: http-web
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        volumeMounts:
+        - mountPath: /mnt
+          name: config
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: mysql-exporter-cm
+          optional: true
+        name: config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-exporter
+  namespace: monitoring
+  labels:
+    k8s-app: mysql-exporter
+spec:
+ type: ClusterIP
+ selector:
+   app: mysql-exporter
+ ports:
+ - name: http-web
+   port: 9104
+   protocol: TCP

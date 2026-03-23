@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: blackbox
+  namespace: monitoring
+spec:
+  interval: 30s
+  jobName: blackbox
+  module: http_2xx
+  prober:
+    url: blackbox-exporter.monitoring.svc:19115
+    scheme: http
+    path: /probe
+  targets:
+    staticConfig:
+      static:
+      # 多个实例写多次即可
+      - https://www.kubeasy.com
+      - https://www.baidu.com
