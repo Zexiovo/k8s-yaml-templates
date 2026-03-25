@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: demo-handler
+  name: demo-handler
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-handler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: demo-handler
+    spec:
+      volumes:
+      - name: skywalking-agent
+        emptyDir: {}
+      
+      initContainers:
+      - name: agent-container
+        image: registry.cn-beijing.aliyuncs.com/dotbalo/skywalking-java-agent:9.4.0-java8
+        command: [ "/bin/sh" ]
+        args: [ "-c", "cp -R /skywalking/agent /agent/ ; mkdir -p /agent/agent/logs/ ; chown -R 1001.1001 /agent" ]
+        volumeMounts:
+        - name: skywalking-agent
+          mountPath: /agent
+
+      containers:
+        - name: demo-handler
+          # 建议检查此镜像地址是否正确，因为你原文件中出现了两个不同的镜像地址
+          image: crpi-fr9j2ao0rwew6bnj.cn-shanghai.personal.cr.aliyuncs.com/yurenovo/demo-handler:v0.0.2-upgrade
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: skywalking-agent
+              mountPath: /agent  # 挂载 Agent 目录到主容器
+          env:
+            # --- 业务原有的环境变量 ---
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8supgrade
+            - name: SERVER_PORT
+              value: "8080"
+            - name: EUREKA_CLIENT_ENABLED
+              value: "false"
+            
+            # --- Skywalking 相关环境变量 (从 initContainers 移至此处) ---
+            - name: JAVA_TOOL_OPTIONS
+              value: "-javaagent:/agent/agent/skywalking-agent.jar"
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: APP
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['app']
+            - name: SW_AGENT_NAME
+              value: "$(NAMESPACE)::$(APP)"
+            - name: SW_AGENT_INSTANCE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+              value: skywalking-oap.skywalking:11800
+          
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+          resources: {}
