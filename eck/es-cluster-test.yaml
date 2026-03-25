@@ -4,6 +4,7 @@ metadata:
   name: es-cluster
 spec:
   version: 9.3.1
+  image: crpi-fr9j2ao0rwew6bnj.cn-shanghai.personal.cr.aliyuncs.com/yurenovo/elasticsearch:9.3.1
   nodeSets:
   - name: default
     count: 3
@@ -20,7 +21,7 @@ spec:
     #    resources:
     #      requests:
     #        storage: 5Gi
-    #    storageClassName: standard
+    #    storageClassName: nfs-csi  # 修改这里，与 kubectl get sc 的结果一致
 
     podTemplate:
       spec:
